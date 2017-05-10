@@ -127,7 +127,7 @@ class Engine(object):
         candidates = self._get_candidates(v)
         return len(candidates)
 
-    def neighbours(self, v):
+    def neighbours(self, v, flind = -1):
         """
         Hashes vector v, collects all candidate vectors from the matching
         buckets in storage, applys the (optional) distance function and
@@ -150,6 +150,14 @@ class Engine(object):
         # Apply vector filters if specified and return filtered list
         if self.vector_filters:
             candidates = self._apply_filter(self.vector_filters, candidates)
+        
+        # Return filtered list only match flind
+        if flind > -1:
+            out = []
+            for v in candidates: 
+                if int(v[1]) == flind:
+                    out.append(v)
+            candidates = out
 
         # If there is no vector filter, just return list of candidates
         return candidates
