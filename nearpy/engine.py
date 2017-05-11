@@ -132,7 +132,10 @@ class Engine(object):
         candidates = self._get_candidates(v)
         return len(candidates)
 
-    def neighbours(self, v, flind = None):
+    def initIndMap(self, filemap):
+        self.findmap = filemap
+
+    def neighbours(self, v, fname = None):
         """
         Hashes vector v, collects all candidate vectors from the matching
         buckets in storage, applys the (optional) distance function and
@@ -150,7 +153,7 @@ class Engine(object):
 
         # Apply distance implementation if specified
         if self.distance:
-            candidates = self._append_distances(v, self.distance, candidates, flind)
+            candidates = self._append_distances(v, self.distance, candidates, fname)
 
         # Apply vector filters if specified and return filtered list
         if self.vector_filters:
@@ -181,7 +184,7 @@ class Engine(object):
         else:
             return candidates
 
-    def _append_distances(self, v, distance, candidates, flind=None):
+    def _append_distances(self, v, distance, candidates, fname=None):
         """ Apply distance implementation if specified """
         if distance:
             # Normalize vector (stored vectors are normalized)
@@ -191,8 +194,9 @@ class Engine(object):
             out = []
             for x in candidates:
                 # Return filtered list only match flind
-                if flind is not None:
-                    if int(x[1]) in flind:
+                if fname is not None:
+                    ind = int(x[1])
+                    if ind in self.findmap and self.findmap[ind] == fname:
                         out.append((x[0], x[1], self.distance.distance(x[0], nv)))
                 else:
                     out.append((x[0], x[1], self.distance.distance(x[0], nv)))
