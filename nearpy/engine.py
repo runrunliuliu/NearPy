@@ -137,7 +137,7 @@ class Engine(object):
 
         # Collect candidates from all buckets from all hashes
         candidates = self._get_candidates(v)
-        # print 'Candidate count is %d' % len(candidates)
+        print 'Candidate count is %d' % len(candidates)
 
         # Apply fetch vector filters if specified and return filtered list
         if self.fetch_vector_filters:
