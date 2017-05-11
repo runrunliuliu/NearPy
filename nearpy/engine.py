@@ -65,6 +65,8 @@ class Engine(object):
                  fetch_vector_filters=None,
                  vector_filters=None,
                  storage=None):
+
+        self.findmap = {}
         """ Keeps the configuration. """
         if lshashes is None:
             lshashes = [RandomBinaryProjections('default', 10)]
