@@ -170,7 +170,7 @@ class Engine(object):
             for bucket_key in lshash.hash_vector(v, querying=True):
                 bucket_content = self.storage.get_bucket(lshash.hash_name,
                                                          bucket_key)
-                #print 'Bucket %s size %d' % (bucket_key, len(bucket_content))
+                print 'Bucket %s size %d' % (bucket_key, len(bucket_content))
                 candidates.extend(bucket_content)
         return candidates
 
