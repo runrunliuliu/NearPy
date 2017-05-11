@@ -150,19 +150,11 @@ class Engine(object):
 
         # Apply distance implementation if specified
         if self.distance:
-            candidates = self._append_distances(v, self.distance, candidates)
+            candidates = self._append_distances(v, self.distance, candidates, flind)
 
         # Apply vector filters if specified and return filtered list
         if self.vector_filters:
             candidates = self._apply_filter(self.vector_filters, candidates)
-        
-        # Return filtered list only match flind
-        if flind is not None and len(flind) > 0:
-            out = []
-            for v in candidates: 
-                if int(v[1]) in flind:
-                    out.append(v)
-            candidates = out
 
         # If there is no vector filter, just return list of candidates
         return candidates
@@ -189,7 +181,7 @@ class Engine(object):
         else:
             return candidates
 
-    def _append_distances(self, v, distance, candidates):
+    def _append_distances(self, v, distance, candidates, flind=None):
         """ Apply distance implementation if specified """
         if distance:
             # Normalize vector (stored vectors are normalized)
@@ -198,7 +190,12 @@ class Engine(object):
             #                 in candidates]
             out = []
             for x in candidates:
-                out.append((x[0], x[1], self.distance.distance(x[0], nv)))
+                # Return filtered list only match flind
+                if flind is not None:
+                    if int(x[1]) in flind:
+                        out.append((x[0], x[1], self.distance.distance(x[0], nv)))
+                else:
+                    out.append((x[0], x[1], self.distance.distance(x[0], nv)))
             candidates = out 
 
         return candidates
