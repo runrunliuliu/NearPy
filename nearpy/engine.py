@@ -23,7 +23,7 @@
 import json
 
 import numpy as np
-
+import logging
 from nearpy.hashes import RandomBinaryProjections
 from nearpy.hashes import PCABinaryProjections
 from nearpy.hashes import RandomBinaryProjectionTree
@@ -32,6 +32,9 @@ from nearpy.distances import EuclideanDistance
 from nearpy.distances import CosineDistance
 from nearpy.storage import MemoryStorage
 from nearpy.utils.utils import unitvec
+
+
+logger  = logging.getLogger('Engine') 
 
 
 class Engine(object):
@@ -137,7 +140,10 @@ class Engine(object):
     def initIndMap(self, filemap):
         self.findmap = filemap
 
-    def neighbours(self, v, fname = None):
+    def updateIndMap(self, filemap):
+        self.findmap.update(filemap)
+
+    def neighbours(self, v, fname=None, dt=None):
         """
         Hashes vector v, collects all candidate vectors from the matching
         buckets in storage, applys the (optional) distance function and
@@ -147,7 +153,7 @@ class Engine(object):
 
         # Collect candidates from all buckets from all hashes
         candidates = self._get_candidates(v)
-        print 'Candidate count is %d' % len(candidates)
+        logger.debug('Candidate count is %d' % len(candidates))
 
         # Apply fetch vector filters if specified and return filtered list
         if self.fetch_vector_filters:
@@ -155,7 +161,7 @@ class Engine(object):
 
         # Apply distance implementation if specified
         if self.distance:
-            candidates = self._append_distances(v, self.distance, candidates, fname)
+            candidates = self._append_distances(v, self.distance, candidates, fname, dt)
 
         # Apply vector filters if specified and return filtered list
         if self.vector_filters:
@@ -171,7 +177,7 @@ class Engine(object):
             for bucket_key in lshash.hash_vector(v, querying=True):
                 bucket_content = self.storage.get_bucket(lshash.hash_name,
                                                          bucket_key)
-                print 'Bucket %s size %d' % (bucket_key, len(bucket_content))
+                logger.debug('Bucket %s size %d' % (bucket_key, len(bucket_content)))
                 candidates.extend(bucket_content)
         return candidates
 
@@ -186,7 +192,7 @@ class Engine(object):
         else:
             return candidates
 
-    def _append_distances(self, v, distance, candidates, fname=None):
+    def _append_distances(self, v, distance, candidates, fname=None, dt=None):
         """ Apply distance implementation if specified """
         if distance:
             # Normalize vector (stored vectors are normalized)
@@ -198,7 +204,12 @@ class Engine(object):
                 # Return filtered list only match flind
                 if fname is not None:
                     ind = int(x[1])
-                    if ind in self.findmap and self.findmap[ind] == fname:
+                    if ind in self.findmap and self.findmap[ind][0] == fname:
+                        out.append((x[0], x[1], self.distance.distance(x[0], nv)))
+                elif dt is not None:
+                    ind = int(x[1])
+                    if ind in self.findmap and self.findmap[ind][1] >= dt[0] and self.findmap[ind][1] <= dt[1]:
+                        logger.debug('dt0:{} dt1:{} candicate:{}'.format(dt[0], dt[1], self.findmap[ind][1]))
                         out.append((x[0], x[1], self.distance.distance(x[0], nv)))
                 else:
                     out.append((x[0], x[1], self.distance.distance(x[0], nv)))
