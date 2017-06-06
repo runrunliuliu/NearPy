@@ -41,8 +41,11 @@ class NearestFilter(VectorFilter):
         try:
             # Return filtered (vector, data, distance )tuple list. Will fail
             # if input is list of (vector, data) tuples.
-            sorted_list = sorted(input_list, key=lambda x: x[2])
-            return sorted_list[:self.N]
+            # sorted_list = sorted(input_list, key=lambda x: x[2])
+            # sorted_list = sorted(input_list, key=lambda x: x[2])
+            # return sorted_list[:self.N]
+            input_list.sort(key=lambda x: x[2])
+            return input_list[:self.N]
         except:
             # Otherwise just return input list
             return input_list
