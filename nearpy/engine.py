@@ -70,6 +70,7 @@ class Engine(object):
                  storage=None):
 
         self.findmap = {}
+        self.univect = {}
         """ Keeps the configuration. """
         if lshashes is None:
             lshashes = [RandomBinaryProjections('default', 10)]
@@ -98,7 +99,8 @@ class Engine(object):
         vector and will be returned in search results.
         """
         # We will store the normalized vector (used during retrieval)
-        nv = unitvec(v)
+        # nv = unitvec(v)
+        nv = None 
         # Store vector in each bucket of all hashes
         for lshash in self.lshashes:
             for bucket_key in lshash.hash_vector(v):
@@ -137,11 +139,26 @@ class Engine(object):
         candidates = self._get_candidates(v)
         return len(candidates)
 
-    def initIndMap(self, filemap):
+    def initIndMap(self, filemap, univect):
         self.findmap = filemap
+        self.univect = univect
 
     def updateIndMap(self, filemap):
         self.findmap.update(filemap)
+
+    def simpair(self, v, pairs):
+        out = []
+        nv  = unitvec(v)
+        logger.info('Input_Pair_Similar_size %d' % len(pairs))
+        for p in pairs:
+            if p not in self.univect:
+                logger.error('Stock_Time_not_Include: {}'.format(p))
+                continue
+            tmp = self.univect[p]
+            vec = tmp[0]
+            out.append((tmp[1], self.distance.distance(vec, nv)))
+        logger.info("Output_Pair_Similar_size:{} Match_prob:{}".format(len(out), len(out) / (0.0 + len(pairs))))
+        return out
 
     def neighbours(self, v, fname=None, dt=None):
         """
@@ -157,15 +174,21 @@ class Engine(object):
 
         # Apply fetch vector filters if specified and return filtered list
         if self.fetch_vector_filters:
+            logger.info('fetch_vector_filter --------> Start')
             candidates = self._apply_filter(self.fetch_vector_filters, candidates)
+            logger.info('fetch_vector_filter --------> Finish')
 
         # Apply distance implementation if specified
         if self.distance:
+            logger.info('distance_computing --------> Start')
             candidates = self._append_distances(v, self.distance, candidates, fname, dt)
+            logger.info('distance_computing --------> Finish')
 
         # Apply vector filters if specified and return filtered list
         if self.vector_filters:
+            logger.info('nearest_find --------> Start')
             candidates = self._apply_filter(self.vector_filters, candidates)
+            logger.info('nearest_find --------> Finish')
 
         # If there is no vector filter, just return list of candidates
         return candidates
@@ -192,6 +215,18 @@ class Engine(object):
         else:
             return candidates
 
+    # get unit vector
+    def getUnivector(self, candidate, findex=None):
+        if findex is None:
+            return candidate[0]
+        else:
+            if findex in self.findmap:
+                (stock, time) = self.findmap[findex]
+                return self.univect[stock + str(time)][0]
+            else:
+                logger.error('Bad Index: {}'.format(findex))
+                return None
+
     def _append_distances(self, v, distance, candidates, fname=None, dt=None):
         """ Apply distance implementation if specified """
         if distance:
@@ -202,17 +237,18 @@ class Engine(object):
             out = []
             for x in candidates:
                 # Return filtered list only match flind
+                ind = int(x[1])
+                vec = self.getUnivector(x, findex=ind)
+
                 if fname is not None:
-                    ind = int(x[1])
                     if ind in self.findmap and self.findmap[ind][0] == fname:
-                        out.append((x[0], x[1], self.distance.distance(x[0], nv)))
+                        out.append((vec, x[1], self.distance.distance(vec, nv)))
                 elif dt is not None:
-                    ind = int(x[1])
                     if ind in self.findmap and self.findmap[ind][1] >= dt[0] and self.findmap[ind][1] <= dt[1]:
                         logger.debug('dt0:{} dt1:{} candicate:{}'.format(dt[0], dt[1], self.findmap[ind][1]))
-                        out.append((x[0], x[1], self.distance.distance(x[0], nv)))
+                        out.append((vec, x[1], self.distance.distance(vec, nv)))
                 else:
-                    out.append((x[0], x[1], self.distance.distance(x[0], nv)))
+                    out.append((vec, x[1], self.distance.distance(vec, nv)))
             candidates = out 
 
         return candidates
