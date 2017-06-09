@@ -153,10 +153,10 @@ class Engine(object):
         nv  = unitvec(v)
         logger.info('Input_Pair_Similar_size %d' % len(pairs))
         for p in pairs:
-            if p not in self.univect:
+            if not self.ftstore.contains(p):
                 logger.error('Stock_Time_not_Include: {}'.format(p))
                 continue
-            tmp = self.univect[p]
+            tmp = self.ftstore.get(p)
             vec = tmp[0]
             out.append((tmp[1], self.distance.distance(vec, nv)))
         logger.info("Output_Pair_Similar_size:{} Match_prob:{}".format(len(out), len(out) / (0.0 + len(pairs))))
