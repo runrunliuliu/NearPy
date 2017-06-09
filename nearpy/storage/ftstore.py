@@ -24,7 +24,7 @@ class FTStore(object):
         if self.mode == 'MEM':
             self.store[key] = val
         if self.mode == 'ROCKS':
-            logger.debug('key:{}'.format(self.warp(key)))
+            logger.debug('key:{}'.format(self.wrap(key)))
             self.store.put(self.wrap(key), self.wrap(val))
 
     def get(self, key):
