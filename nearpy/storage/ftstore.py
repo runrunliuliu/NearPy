@@ -18,7 +18,7 @@ class FTStore(object):
             self.store = self.initRocks()
 
     def wrap(self, string):
-        return b'" + string + "'
+        return string
 
     def add(self, key, val):
         if self.mode == 'MEM':
