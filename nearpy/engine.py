@@ -224,11 +224,8 @@ class Engine(object):
         else:
             if findex in self.findmap:
                 (stock, time) = self.findmap[findex]
-
                 val = self.ftstore.get(stock + str(time))
-                logger.debug('FtStore: {}'.format(val))
-
-                return self.univect[stock + str(time)][0]
+                return val[0]
             else:
                 logger.error('Bad Index: {}'.format(findex))
                 return None
