@@ -71,6 +71,7 @@ class Engine(object):
 
         self.findmap = {}
         self.univect = {}
+        self.ftstore = None
         """ Keeps the configuration. """
         if lshashes is None:
             lshashes = [RandomBinaryProjections('default', 10)]
@@ -139,9 +140,10 @@ class Engine(object):
         candidates = self._get_candidates(v)
         return len(candidates)
 
-    def initIndMap(self, filemap, univect):
+    def initIndMap(self, filemap, univect, ftstore):
         self.findmap = filemap
         self.univect = univect
+        self.ftstore = ftstore
 
     def updateIndMap(self, filemap):
         self.findmap.update(filemap)
@@ -222,6 +224,10 @@ class Engine(object):
         else:
             if findex in self.findmap:
                 (stock, time) = self.findmap[findex]
+
+                val = self.ftstore.get(stock + str(time))
+                logger.debug('FtStore: {}'.format(val))
+
                 return self.univect[stock + str(time)][0]
             else:
                 logger.error('Bad Index: {}'.format(findex))
