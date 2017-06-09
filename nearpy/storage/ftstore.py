@@ -40,7 +40,7 @@ class FTStore(object):
             if key not in self.store:
                 ret = False
         if self.mode == 'ROCKS':
-            ret = self.store.key_may_exist(key)[0]:
+            ret = self.store.key_may_exist(key)[0]
         return ret
 
     def initRocks(self, ind):
