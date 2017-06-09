@@ -8,14 +8,15 @@ logger  = logging.getLogger('FTStore')
 
 class FTStore(object):
 
-    def __init__(self, mode='MEM'):
+    def __init__(self, mode='MEM', ind='test'):
+        self.dirs  = '0_DB'
         self.store = None
         self.mode  = mode
 
         if mode == 'MEM':
             self.store = dict()
         if mode == 'ROCKS':
-            self.store = self.initRocks()
+            self.store = self.initRocks(ind)
 
     def wrap(self, string):
         return string
@@ -41,7 +42,7 @@ class FTStore(object):
                 ret = False
         return ret
 
-    def initRocks(self):
+    def initRocks(self, ind):
         opts = rocksdb.Options()
         opts.create_if_missing = True
         opts.max_open_files = 300000
@@ -54,6 +55,6 @@ class FTStore(object):
             block_cache=rocksdb.LRUCache(2 * (1024 ** 3)),
             block_cache_compressed=rocksdb.LRUCache(500 * (1024 ** 2)))
 
-        db = rocksdb.DB("test.db", opts)
+        db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts)
         return db
 #
