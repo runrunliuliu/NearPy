@@ -31,7 +31,6 @@ class FTStore(object):
         if self.mode == 'MEM':
             return self.store[key]
         if self.mode == 'ROCKS':
-            logger.debug('request key:{}'.format(self.wrap(key)))
             vals = self.store.get(self.wrap(key))
             return pickle.loads(vals)
         
