@@ -51,6 +51,7 @@ class FTStore(object):
         opts.write_buffer_size = 1073741824
         opts.max_write_buffer_number = 20
         opts.target_file_size_base = 67108864
+        opts.max_background_compactions = 8
 
         opts.table_factory = rocksdb.BlockBasedTableFactory(
             filter_policy=rocksdb.BloomFilterPolicy(10),
