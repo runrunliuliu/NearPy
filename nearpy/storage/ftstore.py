@@ -18,6 +18,12 @@ class FTStore(object):
         if mode == 'ROCKS':
             self.store = self.initRocks(ind)
 
+    def addBatch(self, kvs):
+        batch = rocksdb.WriteBatch()
+        for kv in kvs:
+            batch.put(self.wrap(kv[0]), self.wrap(kv[1]))
+        self.store.write(batch)
+
     def wrap(self, string):
         return string
 
@@ -52,6 +58,7 @@ class FTStore(object):
         opts.max_write_buffer_number = 20
         opts.target_file_size_base = 67108864
         opts.max_background_compactions = 8
+        opts.max_background_flushes = 4
 
         opts.table_factory = rocksdb.BlockBasedTableFactory(
             filter_policy=rocksdb.BloomFilterPolicy(10),
