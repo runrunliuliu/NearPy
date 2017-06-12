@@ -48,9 +48,10 @@ class FTStore(object):
         opts = rocksdb.Options()
         opts.create_if_missing = True
         opts.max_open_files = 300000
-        opts.write_buffer_size = 5368709120
-        opts.max_write_buffer_number = 10
+        opts.write_buffer_size = 1073741824
+        opts.max_write_buffer_number = 20
         opts.target_file_size_base = 67108864
+        opts.disableWAL = True 
 
         opts.table_factory = rocksdb.BlockBasedTableFactory(
             filter_policy=rocksdb.BloomFilterPolicy(10),
