@@ -157,6 +157,9 @@ class Engine(object):
                 logger.error('Stock_Time_not_Include: {}'.format(p))
                 continue
             tmp = self.ftstore.get(p)
+            if tmp is None:
+                logger.error('Stock_Time_not_Include: {}'.format(p))
+                continue
             vec = tmp[0]
             out.append((tmp[1], self.distance.distance(vec, nv)))
         logger.info("Output_Pair_Similar_size:{} Match_prob:{}".format(len(out), len(out) / (0.0 + len(pairs))))
@@ -225,6 +228,9 @@ class Engine(object):
             if findex in self.findmap:
                 (stock, time) = self.findmap[findex]
                 val = self.ftstore.get(stock + str(time))
+                if val is None:
+                    logger.error('Bad Index: {}'.format(findex))
+                    return None
                 return val[0]
             else:
                 logger.error('Bad Index: {}'.format(findex))

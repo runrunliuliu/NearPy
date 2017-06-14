@@ -42,6 +42,8 @@ class FTStore(object):
         if self.mode == 'ROCKS':
             logger.debug('Request key:{}'.format(key))
             vals = self.store.get(self.wrap(key))
+            if vals is None:
+                return None
             return pickle.loads(vals)
         
     def contains(self, key):
