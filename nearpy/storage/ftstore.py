@@ -8,7 +8,7 @@ logger  = logging.getLogger('FTStore')
 
 class FTStore(object):
 
-    def __init__(self, mode='MEM', ind='test'):
+    def __init__(self, mode='MEM', ind='test', load=True):
         self.dirs  = '0_DB'
         self.store = None
         self.mode  = mode
@@ -16,7 +16,10 @@ class FTStore(object):
         if mode == 'MEM':
             self.store = dict()
         if mode == 'ROCKS':
-            self.store = self.initRocks(ind)
+            if load is True:
+                self.store = self.initRocks(ind)
+            else:
+                self.store = self.readRocks(ind)
 
     def addBatch(self, kvs):
         batch = rocksdb.WriteBatch()
@@ -49,6 +52,11 @@ class FTStore(object):
         if self.mode == 'ROCKS':
             ret = self.store.key_may_exist(key)[0]
         return ret
+
+    def readRocks(self, ind):
+        opts = rocksdb.Options()
+        db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts, read_only=True)
+        return db
 
     def initRocks(self, ind):
         opts = rocksdb.Options()
