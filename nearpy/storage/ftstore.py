@@ -54,9 +54,22 @@ class FTStore(object):
         return ret
 
     def readRocks(self, ind):
-        # opts = rocksdb.Options()
-        # db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts, read_only=True)
-        db = self.initRocks(ind)
+        opts = rocksdb.Options()
+        opts.create_if_missing = True
+        opts.max_open_files = 300000
+        opts.write_buffer_size = 1073741824
+        opts.max_write_buffer_number = 20
+        opts.target_file_size_base = 67108864
+        opts.max_background_compactions = 8
+        opts.max_background_flushes = 4
+
+        opts.table_factory = rocksdb.BlockBasedTableFactory(
+            filter_policy=rocksdb.BloomFilterPolicy(10),
+            block_cache=rocksdb.LRUCache(2 * (1024 ** 3)),
+            block_cache_compressed=rocksdb.LRUCache(500 * (1024 ** 2)))
+
+        db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts, read_only=True)
+        # db = self.initRocks(ind)
         return db
 
     def initRocks(self, ind):
