@@ -24,7 +24,7 @@ class FTStore(object):
     def addBatch(self, kvs):
         batch = rocksdb.WriteBatch()
         for kv in kvs:
-            batch.put(self.wrap(kv[0]), self.wrap(kv[1]))
+            batch.put(self.wrap(kv[0]), self.wrap(kv[1]), disable_wal=True)
         self.store.write(batch)
 
     def wrap(self, string):
@@ -34,7 +34,7 @@ class FTStore(object):
         if self.mode == 'MEM':
             self.store[key] = val
         if self.mode == 'ROCKS':
-            self.store.put(self.wrap(key), self.wrap(val))
+            self.store.put(self.wrap(key), self.wrap(val), disable_wal=True)
 
     def get(self, key):
         if self.mode == 'MEM':
