@@ -54,7 +54,9 @@ class FTStore(object):
         return ret
 
     def readRocks(self, ind):
-        db = rocksdb.DB(self.dirs + '/' + ind + '.db', read_only=True)
+        # opts = rocksdb.Options()
+        # db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts, read_only=True)
+        db = self.initRocks(ind)
         return db
 
     def initRocks(self, ind):
