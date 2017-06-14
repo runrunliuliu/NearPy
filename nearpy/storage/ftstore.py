@@ -24,8 +24,8 @@ class FTStore(object):
     def addBatch(self, kvs):
         batch = rocksdb.WriteBatch()
         for kv in kvs:
-            batch.put(self.wrap(kv[0]), self.wrap(kv[1]), disable_wal=True)
-        self.store.write(batch)
+            batch.put(self.wrap(kv[0]), self.wrap(kv[1]))
+        self.store.write(batch, disable_wal=True)
 
     def wrap(self, string):
         return string
