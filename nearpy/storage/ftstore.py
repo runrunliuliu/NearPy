@@ -68,10 +68,10 @@ class FTStore(object):
         opts.table_factory = rocksdb.BlockBasedTableFactory(
             filter_policy=rocksdb.BloomFilterPolicy(10),
             block_cache=rocksdb.LRUCache(2 * (1024 ** 3)),
+            cache_index_and_filter_blocks=True,
             block_cache_compressed=rocksdb.LRUCache(500 * (1024 ** 2)))
 
         db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts, read_only=True)
-        # db = self.initRocks(ind)
         return db
 
     def initRocks(self, ind):
@@ -87,6 +87,7 @@ class FTStore(object):
         opts.table_factory = rocksdb.BlockBasedTableFactory(
             filter_policy=rocksdb.BloomFilterPolicy(10),
             block_cache=rocksdb.LRUCache(2 * (1024 ** 3)),
+            cache_index_and_filter_blocks=True,
             block_cache_compressed=rocksdb.LRUCache(500 * (1024 ** 2)))
 
         db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts)
