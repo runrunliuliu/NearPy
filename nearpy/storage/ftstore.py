@@ -30,6 +30,11 @@ class FTStore(object):
     def wrap(self, string):
         return string
 
+    def delete(self):
+        del self.store
+        self.store = None
+        logger.info('DEL_STORE_SUCCESS')
+
     def update(self, store):
         if self.mode == 'MEM':
             self.store.update(store)
