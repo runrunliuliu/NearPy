@@ -148,9 +148,9 @@ class Engine(object):
     def updateIndMap(self, filemap):
         self.findmap.update(filemap)
 
-    def restartFTstore(self, ftstore):
+    def delstore(self):
         del self.ftstore
-        self.ftstore = ftstore 
+        self.ftstore = None 
 
     def simpair(self, v, pairs):
         out = []
