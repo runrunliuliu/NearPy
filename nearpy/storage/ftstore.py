@@ -30,6 +30,12 @@ class FTStore(object):
     def wrap(self, string):
         return string
 
+    def update(self, store):
+        if self.mode == 'MEM':
+            self.store.update(store)
+        if self.mode == 'ROCKS':
+            self.store = store
+
     def add(self, key, val):
         if self.mode == 'MEM':
             self.store[key] = val
