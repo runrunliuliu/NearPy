@@ -152,8 +152,7 @@ class Engine(object):
         self.ftstore.update(store)
 
     def delstore(self):
-        del self.ftstore
-        self.ftstore = None 
+        self.ftstore.delete()
 
     def simpair(self, v, pairs):
         out = []
