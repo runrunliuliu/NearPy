@@ -148,6 +148,10 @@ class Engine(object):
     def updateIndMap(self, filemap):
         self.findmap.update(filemap)
 
+    def restartFTstore(self, ftstore):
+        del self.ftstore
+        self.ftstore = ftstore 
+
     def simpair(self, v, pairs):
         out = []
         nv  = unitvec(v)
