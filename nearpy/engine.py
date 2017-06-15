@@ -148,6 +148,9 @@ class Engine(object):
     def updateIndMap(self, filemap):
         self.findmap.update(filemap)
 
+    def updateStore(self, store):
+        self.ftstore.update(store)
+
     def delstore(self):
         del self.ftstore
         self.ftstore = None 
