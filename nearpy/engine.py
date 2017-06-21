@@ -76,15 +76,19 @@ class Engine(object):
         if lshashes is None:
             lshashes = [RandomBinaryProjections('default', 10)]
         self.lshashes = lshashes
+
         if distance is None:
             distance = CosineDistance()
         self.distance = distance
+
         if vector_filters is None: 
             vector_filters = [NearestFilter(10)]
         self.vector_filters = vector_filters
-        if fetch_vector_filters is None: 
-            fetch_vector_filters = [UniqueFilter()]
+
+        # if fetch_vector_filters is None: 
+        #     fetch_vector_filters = [UniqueFilter()]
         self.fetch_vector_filters = fetch_vector_filters
+
         if storage is None:
             storage = MemoryStorage()
         self.storage = storage
@@ -246,9 +250,7 @@ class Engine(object):
         """ Apply distance implementation if specified """
         if distance:
             # Normalize vector (stored vectors are normalized)
-            nv = unitvec(v)
-            # candidates = [(x[0], x[1], self.distance.distance(x[0], nv)) for x
-            #                 in candidates]
+            nv  = unitvec(v)
             out = []
             for x in candidates:
                 # Return filtered list only match flind
@@ -257,13 +259,13 @@ class Engine(object):
 
                 if fname is not None:
                     if ind in self.findmap and self.findmap[ind][0] == fname:
-                        out.append((vec, x[1], self.distance.distance(vec, nv)))
+                        out.append(('vec', x[1], self.distance.distance(vec, nv)))
                 elif dt is not None:
                     if ind in self.findmap and self.findmap[ind][1] >= dt[0] and self.findmap[ind][1] <= dt[1]:
                         logger.debug('dt0:{} dt1:{} candicate:{}'.format(dt[0], dt[1], self.findmap[ind][1]))
-                        out.append((vec, x[1], self.distance.distance(vec, nv)))
+                        out.append(('vec', x[1], self.distance.distance(vec, nv)))
                 else:
-                    out.append((vec, x[1], self.distance.distance(vec, nv)))
+                    out.append(('vec', x[1], self.distance.distance(vec, nv)))
             candidates = out 
 
         return candidates
