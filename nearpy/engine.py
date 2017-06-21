@@ -196,7 +196,8 @@ class Engine(object):
         # Apply distance implementation if specified
         if self.distance:
             logger.info('distance_computing --------> Start')
-            candidates = self._append_distances(v, self.distance, candidates, fname, dt)
+            # candidates = self._append_distances(v, self.distance, candidates, fname, dt)
+            candidates = self._append_distances_gevent(v, self.distance, candidates, fname, dt)
             logger.info('distance_computing --------> Finish')
 
         # Apply vector filters if specified and return filtered list
@@ -246,7 +247,41 @@ class Engine(object):
                 logger.error('Bad Index: {}'.format(findex))
                 return None
 
+    def _append_distances_gevent(self, v, distance, candidates, fname=None, dt=None):
+
+        def task(x, vec, nv):
+            return ('vec', x[1], self.distance.distance(vec, nv))
+
+        """ Apply distance implementation if specified """
+        if distance:
+            # Normalize vector (stored vectors are normalized)
+            nv    = unitvec(v)
+            out   = []
+            tasks = []
+            for x in candidates:
+                # Return filtered list only match flind
+                ind = int(x[1])
+                vec = self.getUnivector(x, findex=ind)
+                if fname is not None:
+                    if ind in self.findmap and self.findmap[ind][0] == fname:
+                        tasks.append(gevent.spawn(task, x, vec, nv))
+                elif dt is not None:
+                    if ind in self.findmap and self.findmap[ind][1] >= dt[0] and self.findmap[ind][1] <= dt[1]:
+                        tasks.append(gevent.spawn(task, x, vec, nv))
+                else:
+                    tasks.append(gevent.spawn(task, x, vec, nv))
+            gevent.joinall(tasks)
+            for t in tasks:
+                if t.value is not None:
+                    out.append(t.value)
+        return out
+
+
     def _append_distances(self, v, distance, candidates, fname=None, dt=None):
+
+        def task(x, vec, nv):
+            return ('vec', x[1], self.distance.distance(vec, nv))
+
         """ Apply distance implementation if specified """
         if distance:
             # Normalize vector (stored vectors are normalized)
@@ -266,6 +301,8 @@ class Engine(object):
                         out.append(('vec', x[1], self.distance.distance(vec, nv)))
                 else:
                     out.append(('vec', x[1], self.distance.distance(vec, nv)))
+
+
             candidates = out 
 
         return candidates
