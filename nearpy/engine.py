@@ -263,6 +263,7 @@ class Engine(object):
                 ind = int(x[1])
                 vec = self.getUnivector(x, findex=ind)
                 if fname is not None:
+                    logger.debug('candidate_stock:{} time:{}'.format(self.findmap[ind][0], self.findmap[ind][1]))
                     if ind in self.findmap and self.findmap[ind][0] == fname:
                         tasks.append(gevent.spawn(task, x, vec, nv))
                 elif dt is not None:
