@@ -19,7 +19,8 @@ class FTStore(object):
             if load is True:
                 self.store = self.initRocks(ind)
             else:
-                self.store = self.readRocks(ind)
+                self.store = self.initRocks(ind)
+                # self.store = self.readRocks(ind)
 
     def addBatch(self, kvs):
         batch = rocksdb.WriteBatch()
