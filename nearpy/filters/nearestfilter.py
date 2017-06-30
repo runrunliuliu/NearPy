@@ -19,9 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
+import logging
 from nearpy.filters.vectorfilter import VectorFilter
 
+logger  = logging.getLogger('Engine') 
 
 class NearestFilter(VectorFilter):
     """
@@ -40,7 +41,7 @@ class NearestFilter(VectorFilter):
         """
         try:
             out  = []
-            uniq = {}
+            uniq = set() 
             # Return filtered (vector, data, distance )tuple list. Will fail
             # if input is list of (vector, data) tuples.
             # sorted_list = sorted(input_list, key=lambda x: x[2])
@@ -56,6 +57,8 @@ class NearestFilter(VectorFilter):
                     out.append(k)
                     uniq.add(k[1])
                     cnt = cnt + 1
+                else:
+                    logger.debug('Duplicate:{}'.format(k[1]))
             return out
         except:
             # Otherwise just return input list
