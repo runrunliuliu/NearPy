@@ -154,6 +154,9 @@ class Engine(object):
 
     def updateStore(self, store):
         self.ftstore.update(store)
+    
+    def getStore(self):
+        return self.ftstore
 
     def delstore(self):
         self.ftstore.delete()
