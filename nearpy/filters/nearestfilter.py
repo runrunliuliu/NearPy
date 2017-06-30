@@ -39,13 +39,24 @@ class NearestFilter(VectorFilter):
         Returns subset of specified input list.
         """
         try:
+            out  = []
+            uniq = {}
             # Return filtered (vector, data, distance )tuple list. Will fail
             # if input is list of (vector, data) tuples.
             # sorted_list = sorted(input_list, key=lambda x: x[2])
             # sorted_list = sorted(input_list, key=lambda x: x[2])
             # return sorted_list[:self.N]
             input_list.sort(key=lambda x: x[2])
-            return input_list[:self.N]
+
+            cnt = 0
+            for k in input_list:
+                if cnt == self.N:
+                    break
+                if k[1] not in uniq:
+                    out.append(k)
+                    uniq.add(k[1])
+                    cnt = cnt + 1
+            return out
         except:
             # Otherwise just return input list
             return input_list
