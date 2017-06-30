@@ -35,7 +35,7 @@ class NearestFilter(VectorFilter):
         """
         self.N = N
 
-    def filter_vectors(self, input_list):
+    def filter_vectors(self, input_list, indmap):
         """
         Returns subset of specified input list.
         """
@@ -53,12 +53,16 @@ class NearestFilter(VectorFilter):
             for k in input_list:
                 if cnt == self.N:
                     break
-                if k[1] not in uniq:
+                if k[1] not in indmap:
+                    logger.error('missing:{}'.format(k[1]))
+                    continue
+                key = indmap[k[1]]
+                if key not in uniq:
                     out.append(k)
-                    uniq.add(k[1])
+                    uniq.add(key)
                     cnt = cnt + 1
                 else:
-                    logger.debug('Duplicate:{}'.format(k[1]))
+                    logger.debug('Duplicate:{}'.format(key))
             return out
         except:
             # Otherwise just return input list
