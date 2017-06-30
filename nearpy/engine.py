@@ -206,7 +206,7 @@ class Engine(object):
         # Apply vector filters if specified and return filtered list
         if self.vector_filters:
             logger.info('nearest_find --------> Start')
-            candidates = self._apply_filter(self.vector_filters, candidates)
+            candidates = self._apply_filter(self.vector_filters, candidates, self.findmap)
             logger.info('nearest_find --------> Finish')
 
         # If there is no vector filter, just return list of candidates
