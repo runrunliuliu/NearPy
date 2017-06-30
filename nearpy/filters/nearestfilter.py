@@ -53,10 +53,11 @@ class NearestFilter(VectorFilter):
             for k in input_list:
                 if cnt == self.N:
                     break
-                if k[1] not in indmap:
+                ind = int(k[1])
+                if ind not in indmap:
                     logger.error('missing:{}'.format(k[1]))
                     continue
-                key = indmap[k[1]]
+                key = indmap[ind]
                 if key not in uniq:
                     out.append(k)
                     uniq.add(key)
