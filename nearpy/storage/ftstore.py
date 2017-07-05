@@ -1,6 +1,8 @@
 import logging
 import rocksdb
 import cPickle as pickle
+import numpy as np
+import zlib
 
 
 logger  = logging.getLogger('FTStore') 
@@ -50,7 +52,9 @@ class FTStore(object):
 
     def get(self, key):
         if self.mode == 'MEM':
-            return self.store[key]
+            val  = self.store[key]
+            dval = np.fromstring(zlib.decompress(val[0]), 'float64')
+            return (dval, val[1])
         if self.mode == 'ROCKS':
             logger.debug('Request key:{}'.format(key))
             vals = self.store.get(self.wrap(key))
