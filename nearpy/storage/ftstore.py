@@ -46,7 +46,8 @@ class FTStore(object):
 
     def add(self, key, val):
         if self.mode == 'MEM':
-            val0 = np.asarray(val[0] * 10000000, int)
+            # val0 = np.asarray(val[0] * 10000000, int)
+            val0 = np.around(val[0], 7)
             cz   = zlib.compress(val0)
             self.store[key] = (cz, val[1])
         if self.mode == 'ROCKS':
@@ -55,8 +56,9 @@ class FTStore(object):
     def get(self, key):
         if self.mode == 'MEM':
             val  = self.store[key]
-            dval = np.fromstring(zlib.decompress(val[0]), dtype=int)
-            dval = dval / 10000000.0 
+            # dval = np.fromstring(zlib.decompress(val[0]), dtype=int)
+            # dval = dval / 10000000.0 
+            dval = np.fromstring(zlib.decompress(val[0]), dtype=float)
             return (dval, val[1])
         if self.mode == 'ROCKS':
             logger.debug('Request key:{}'.format(key))
