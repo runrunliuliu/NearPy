@@ -258,6 +258,7 @@ class Engine(object):
         if distance:
             # Normalize vector (stored vectors are normalized)
             nv    = unitvec(v)
+            logger.debug('nv:{}'.format(nv))
             out   = []
             tasks = []
             for x in candidates:
