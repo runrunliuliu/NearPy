@@ -252,7 +252,10 @@ class Engine(object):
     def _append_distances_gevent(self, v, distance, candidates, fname=None, dt=None):
 
         def task(x, vec, nv):
-            return ('vec', x[1], self.distance.distance(vec, nv))
+            dist = self.distance.distance(vec, nv)
+            del vec
+            vec = None
+            return ('vec', x[1], dist)
 
         """ Apply distance implementation if specified """
         if distance:
