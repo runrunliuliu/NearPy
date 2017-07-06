@@ -53,11 +53,16 @@ class FTStore(object):
             self.store.put(self.wrap(key), self.wrap(val), disable_wal=True)
 
     def get(self, key):
+
         if self.mode == 'MEM':
             val  = self.store[key]
-            dval = np.fromstring(zlib.decompress(val[0]), dtype=int)
+            dstr = zlib.decompress(val[0])
+            dval = np.fromstring(dstr, dtype=int)
             dval = dval / 10000000.0 
+            del dstr
+            dstr = None
             return (dval, val[1])
+
         if self.mode == 'ROCKS':
             logger.debug('Request key:{}'.format(key))
             vals = self.store.get(self.wrap(key))
