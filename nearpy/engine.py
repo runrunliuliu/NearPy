@@ -290,7 +290,6 @@ class Engine(object):
         if distance:
             # Normalize vector (stored vectors are normalized)
             nv  = unitvec(v)
-            logger.debug('nv:{}'.format(nv))
             out = []
             for x in candidates:
                 # Return filtered list only match flind
