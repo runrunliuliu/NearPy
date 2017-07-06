@@ -306,6 +306,7 @@ class Engine(object):
                 else:
                     out.append(('vec', x[1], self.distance.distance(vec, nv)))
 
+                del vec
                 vec = None
 
             candidates = out 
