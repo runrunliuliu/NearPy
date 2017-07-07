@@ -191,7 +191,8 @@ class Engine(object):
         logger.debug('Candidate count is %d' % len(candidates))
 
         logger.info('distance_computing --------> Start')
-        dists = self._append_distances_gevent(v, self.distance, candidates, fname, dt)
+        # dists = self._append_distances_gevent(v, self.distance, candidates, fname, dt)
+        dists = self._append_distances(v, self.distance, candidates, fname, dt)
         logger.info('distance_computing --------> Finish')
 
         logger.info('nearest_find --------> Start')
@@ -274,6 +275,9 @@ class Engine(object):
             for t in tasks:
                 if t.value is not None:
                     out.append(t.value)
+            del tasks
+            tasks = []
+
         return out
 
 
