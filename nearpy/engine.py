@@ -280,37 +280,28 @@ class Engine(object):
 
         return out
 
-
     def _append_distances(self, v, distance, candidates, fname=None, dt=None):
-
-        def task(x, vec, nv):
-            return ('vec', x[1], self.distance.distance(vec, nv))
-
         """ Apply distance implementation if specified """
         if distance:
             # Normalize vector (stored vectors are normalized)
             nv  = unitvec(v)
             out = []
             for x in candidates:
-                # Return filtered list only match flind
                 ind = int(x[1])
                 vec = self.getUnivector(x, findex=ind)
-
                 if fname is not None:
+                    logger.debug('candidate_stock:{} time:{}'.format(self.findmap[ind][0], self.findmap[ind][1]))
                     if ind in self.findmap and self.findmap[ind][0] == fname:
                         out.append(('vec', x[1], self.distance.distance(vec, nv)))
                 elif dt is not None:
                     if ind in self.findmap and self.findmap[ind][1] >= dt[0] and self.findmap[ind][1] <= dt[1]:
-                        logger.debug('dt0:{} dt1:{} candicate:{}'.format(dt[0], dt[1], self.findmap[ind][1]))
                         out.append(('vec', x[1], self.distance.distance(vec, nv)))
                 else:
                     out.append(('vec', x[1], self.distance.distance(vec, nv)))
 
                 del vec
                 vec = None
-
             candidates = out 
-
         return candidates
 
     def clean_all_buckets(self):
