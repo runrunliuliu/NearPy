@@ -190,27 +190,20 @@ class Engine(object):
         candidates = self._get_candidates(v)
         logger.debug('Candidate count is %d' % len(candidates))
 
-        # Apply fetch vector filters if specified and return filtered list
-        if self.fetch_vector_filters:
-            logger.info('fetch_vector_filter --------> Start')
-            candidates = self._apply_filter(self.fetch_vector_filters, candidates)
-            logger.info('fetch_vector_filter --------> Finish')
+        logger.info('distance_computing --------> Start')
+        dists = self._append_distances_gevent(v, self.distance, candidates, fname, dt)
+        logger.info('distance_computing --------> Finish')
 
-        # Apply distance implementation if specified
-        if self.distance:
-            logger.info('distance_computing --------> Start')
-            # candidates = self._append_distances(v, self.distance, candidates, fname, dt)
-            candidates = self._append_distances_gevent(v, self.distance, candidates, fname, dt)
-            logger.info('distance_computing --------> Finish')
+        logger.info('nearest_find --------> Start')
+        nears = self._apply_filter(self.vector_filters, dists)
+        logger.info('nearest_find --------> Finish')
 
-        # Apply vector filters if specified and return filtered list
-        if self.vector_filters:
-            logger.info('nearest_find --------> Start')
-            candidates = self._apply_filter(self.vector_filters, candidates)
-            logger.info('nearest_find --------> Finish')
+        del candidates
+        candidates = None
+        del dists
+        dists = None
 
-        # If there is no vector filter, just return list of candidates
-        return candidates
+        return nears
 
     def _get_candidates(self, v):
         """ Collect candidates from all buckets from all hashes """
