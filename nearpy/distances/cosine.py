@@ -25,15 +25,13 @@ import scipy
 
 from nearpy.distances.distance import Distance
 import numpy as np
-import cudamat as cm
 import time
 
 
 class CosineDistance(Distance):
     """  Uses 1-cos(angle(x,y)) as distance measure. """
-    def __init__(self):
-        cm.cublas_init()
-        cm.cuda_set_device(0)
+    def __init__(self, cm):
+        self.cm = cm
 
     def distance(self, x, y):
         """
@@ -44,8 +42,8 @@ class CosineDistance(Distance):
             x = x.toarray().ravel()
             y = y.toarray().ravel()
 
-        cx = cm.CUDAMatrix(x)
-        cy = cm.CUDAMatrix(y)
-        return 1.0 - cm.dot(cx, cy).asarray()[0][0]
+        cx = self.cm.CUDAMatrix(x)
+        cy = self.cm.CUDAMatrix(y)
+        return 1.0 - self.cm.dot(cx, cy).asarray()[0][0]
 
         # return 1.0 - numpy.dot(x, y)
