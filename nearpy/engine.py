@@ -67,7 +67,7 @@ class Engine(object):
                  distance=None,
                  fetch_vector_filters=None,
                  vector_filters=None,
-                 storage=None):
+                 storage=None, cm=None):
 
         self.findmap = {}
         self.univect = {}
@@ -78,7 +78,7 @@ class Engine(object):
         self.lshashes = lshashes
 
         if distance is None:
-            distance = CosineDistance()
+            distance = CosineDistance(cm)
         self.distance = distance
 
         if vector_filters is None: 
