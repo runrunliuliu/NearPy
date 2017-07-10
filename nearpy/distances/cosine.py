@@ -31,7 +31,7 @@ import time
 
 class CosineDistance(Distance):
     """  Uses 1-cos(angle(x,y)) as distance measure. """
-    def __init__():
+    def __init__(self):
         cm.cublas_init()
         cm.cuda_set_device(0)
 
