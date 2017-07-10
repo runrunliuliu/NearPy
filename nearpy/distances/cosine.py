@@ -30,8 +30,8 @@ import time
 
 class CosineDistance(Distance):
     """  Uses 1-cos(angle(x,y)) as distance measure. """
-    def __init__(self):
-        self.cm = None 
+    def __init__(self, cm):
+        self.cm = cm 
 
     def distance(self, x, y):
         """
@@ -42,8 +42,10 @@ class CosineDistance(Distance):
             x = x.toarray().ravel()
             y = y.toarray().ravel()
 
-        cx = self.cm.CUDAMatrix(x)
-        cy = self.cm.CUDAMatrix(y)
-        return 1.0 - self.cm.dot(cx, cy).asarray()[0][0]
-
-        # return 1.0 - numpy.dot(x, y)
+        if self.cm is None:
+            return 1.0 - numpy.dot(x, y)
+        else:
+            cx = self.cm.CUDAMatrix(x)
+            cy = self.cm.CUDAMatrix(y)
+            return 1.0 - self.cm.dot(cx, cy).asarray()[0][0]
+#
