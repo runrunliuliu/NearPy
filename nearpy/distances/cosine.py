@@ -30,8 +30,8 @@ import time
 
 class CosineDistance(Distance):
     """  Uses 1-cos(angle(x,y)) as distance measure. """
-    def __init__(self, cm):
-        self.cm = cm
+    def __init__(self):
+        self.cm = None 
 
     def distance(self, x, y):
         """
