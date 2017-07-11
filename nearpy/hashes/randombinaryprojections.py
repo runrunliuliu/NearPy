@@ -76,7 +76,7 @@ class RandomBinaryProjections(LSHash):
             # Project vector onto all hyperplane normals
             projection = numpy.dot(self.normals, v)
         # Return binary key
-        return [''.join(['1' if x > 0.0 else '0' for x in projection])]
+        return [int(''.join(['1' if x > 0.0 else '0' for x in projection]), 2)]
 
     def get_config(self):
         """
