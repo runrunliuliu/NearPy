@@ -59,7 +59,7 @@ class FTStore(object):
         if self.mode == 'REDIS':
             val0 = np.asarray(val[0] * 10000000, int)
             cz   = zlib.compress(val0)
-            self.store.set(key, cz)
+            self.store.set(key, (cz, val[1]))
 
     def get(self, key):
 
@@ -80,6 +80,7 @@ class FTStore(object):
             return pickle.loads(vals)
 
         if self.mode == 'REDIS':
+            logger.debug('Redis_Get_{}'.format(key))
             val  = eval(self.store.get(key))
             dstr = zlib.decompress(val[0])
             dval = np.fromstring(dstr, dtype=int)
