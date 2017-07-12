@@ -80,7 +80,7 @@ class FTStore(object):
             return pickle.loads(vals)
 
         if self.mode == 'REDIS':
-            val  = self.store.get(key)
+            val  = eval(self.store.get(key))
             dstr = zlib.decompress(val[0])
             dval = np.fromstring(dstr, dtype=int)
             dval = dval / 10000000.0 
