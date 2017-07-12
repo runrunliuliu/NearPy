@@ -1,5 +1,6 @@
 import logging
 import rocksdb
+import redis
 try:
         import cPickle as pickle
 except:
@@ -25,7 +26,8 @@ class FTStore(object):
                 self.store = self.initRocks(ind)
             else:
                 self.store = self.initRocks(ind)
-                # self.store = self.readRocks(ind)
+        if mode == 'REDIS':
+            self.store = self.initRedis(ind)
 
     def addBatch(self, kvs):
         batch = rocksdb.WriteBatch()
@@ -54,6 +56,10 @@ class FTStore(object):
             self.store[key] = (cz, val[1])
         if self.mode == 'ROCKS':
             self.store.put(self.wrap(key), self.wrap(val), disable_wal=True)
+        if self.mode == 'REDIS':
+            val0 = np.asarray(val[0] * 10000000, int)
+            cz   = zlib.compress(val0)
+            self.store.set(key, cz)
 
     def get(self, key):
 
@@ -72,6 +78,16 @@ class FTStore(object):
             if vals is None:
                 return None
             return pickle.loads(vals)
+
+        if self.mode == 'REDIS':
+            val  = self.store.get(key)
+            dstr = zlib.decompress(val[0])
+            dval = np.fromstring(dstr, dtype=int)
+            dval = dval / 10000000.0 
+            del dstr
+            dstr = None
+            return (dval, val[1])
+
         
     def contains(self, key):
         ret = True
@@ -80,6 +96,8 @@ class FTStore(object):
                 ret = False
         if self.mode == 'ROCKS':
             ret = self.store.key_may_exist(key)[0]
+        if self.mode == 'REDIS':
+            ret = r.exists(key)
         return ret
 
     def readRocks(self, ind):
@@ -99,6 +117,12 @@ class FTStore(object):
 
         db = rocksdb.DB(self.dirs + '/' + ind + '.db', opts, read_only=True)
         return db
+
+    def initRedis(self, ind):
+        if ind == 'K3':
+            port = 28898
+        r = redis.StrictRedis(host='localhost', port=port, db=0)
+        return r
 
     def initRocks(self, ind):
         opts = rocksdb.Options()
