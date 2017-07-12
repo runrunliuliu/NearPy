@@ -119,6 +119,7 @@ class FTStore(object):
         return db
 
     def initRedis(self, ind):
+        port = 0
         if ind == 'K3':
             port = 28898
         r = redis.StrictRedis(host='localhost', port=port, db=0)
