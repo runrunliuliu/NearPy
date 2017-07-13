@@ -19,6 +19,8 @@ class FTStore(object):
         self.store = None
         self.mode  = mode
 
+        if mode == 'MEMNOZIP':
+            self.store = dict()
         if mode == 'MEM':
             self.store = dict()
         if mode == 'ROCKS':
@@ -60,8 +62,13 @@ class FTStore(object):
             val0 = np.asarray(val[0] * 10000000, int)
             cz   = zlib.compress(val0)
             self.store.set(key, (cz, val[1]))
+        if self.mode == 'MEMNOZIP':
+            self.store[key] = val 
 
     def get(self, key):
+
+        if self.mode == 'MEMNOZIP':
+            return self.store[key]
 
         if self.mode == 'MEM':
             val  = self.store[key]
@@ -93,6 +100,9 @@ class FTStore(object):
     def contains(self, key):
         ret = True
         if self.mode == 'MEM':
+            if key not in self.store:
+                ret = False
+        if self.mode == 'MEMNOZIP':
             if key not in self.store:
                 ret = False
         if self.mode == 'ROCKS':
