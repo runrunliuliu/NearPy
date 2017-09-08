@@ -1,6 +1,4 @@
 import logging
-import rocksdb
-import redis
 try:
         import cPickle as pickle
 except:
@@ -24,11 +22,13 @@ class FTStore(object):
         if mode == 'MEM':
             self.store = dict()
         if mode == 'ROCKS':
+            import rocksdb
             if load is True:
                 self.store = self.initRocks(ind)
             else:
                 self.store = self.initRocks(ind)
         if mode == 'REDIS':
+            import redis
             self.store = self.initRedis(ind)
 
     def addBatch(self, kvs):
